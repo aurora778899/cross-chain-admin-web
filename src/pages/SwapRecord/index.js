@@ -145,10 +145,14 @@ const SwapRecordPage = () => {
                         title: '交易金额 ($)',
                         render: (_, record) => {
                             const amount = Number(record.amount);
-                            const price = Number(record.sellPriceUsd);
-                            if (!Number.isFinite(amount) || !Number.isFinite(price))
+                            if (!Number.isFinite(amount))
                                 return '-';
-                            const total = amount * price;
+                            const sellSymbol = record.sellSymbol?.toUpperCase();
+                            const isStable = sellSymbol === 'USDT' || sellSymbol === 'USDC';
+                            const price = Number(record.sellPriceUsd);
+                            if (!isStable && !Number.isFinite(price))
+                                return '-';
+                            const total = isStable ? amount : amount * price;
                             return `$ ${total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
                         }
                     },
